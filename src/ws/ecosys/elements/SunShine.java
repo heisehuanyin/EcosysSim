@@ -21,7 +21,7 @@ public class SunShine implements Element {
 	/**
 	 * 阳光直射模块预设太阳能量总数
 	 */
-	public static final int SUNSHINE_NUMBER = 20000;
+	public static final int SUNSHINE_NUMBER = 200000000;
 
 	/**
 	 * 新建一个{@link SunShine},用于计算日光能量
@@ -30,14 +30,14 @@ public class SunShine implements Element {
 	 *            行总数
 	 * @param cols
 	 *            列总数
-	 * @param x
-	 *            太阳直射点横轴
-	 * @param y
-	 *            太阳直射点纵轴
+	 * @param rowNum
+	 *            太阳直射点行序
+	 * @param colNum
+	 *            太阳直射点列序
 	 */
-	public SunShine(final int rows, final int cols, final int x, final int y) {
-		this.x_sun = x;
-		this.y_sun = y;
+	public SunShine(final int rows, final int cols, final int rowNum, final int colNum) {
+		this.x_sun = rowNum;
+		this.y_sun = colNum;
 		this.rows = rows;
 		this.cols = cols;
 	}
@@ -45,23 +45,27 @@ public class SunShine implements Element {
 	/**
 	 * 获取当地光照能量理论值
 	 * 
-	 * @param x
-	 *            本地横轴坐标
-	 * @param y
-	 *            本地纵轴坐标
+	 * @param rowNum
+	 *            本地行序号
+	 * @param colNum
+	 *            本地列序号
 	 * @return 光照能量
 	 */
-	public double getSunnyPower(int x, int y) {
-		int x_step = Math.abs(x - this.x_sun);
-		int y_step = Math.abs(y - this.y_sun);
+	public double getSunnyPower(int rowNum, int colNum) {
+		int x_step = Math.abs(rowNum - this.x_sun);
+		int y_step = Math.abs(colNum - this.y_sun);
 		
-		if(x_step > (rows/4) || y_step > (cols/4))
+		if(y_step > cols/2)
+			y_step = cols - y_step;
+		
+		if(x_step > (rows/2) || y_step > (cols/4))
 			return 0;
 		
-		double avg_x = this.SUNSHINE_NUMBER / (rows / 4);
-		double avg_y = avg_x / (cols / 4);
-
-		double realShine = this.SUNSHINE_NUMBER - x_step * avg_x - y_step * avg_y;
+		double avg_row = this.SUNSHINE_NUMBER / (rows / 2);
+		double shineAtDirectRow = this.SUNSHINE_NUMBER - x_step * avg_row;
+		
+		double avg_col = shineAtDirectRow / (cols / 4);
+		double realShine = shineAtDirectRow - y_step * avg_col;
 
 		return realShine;
 	}

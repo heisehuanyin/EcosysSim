@@ -10,11 +10,13 @@ import ws.ecosys.area.SquareUnit;
 import ws.ecosys.elements.SunShine;
 
 public class Ecosys {
-	private int rowsCount = 2000;
-	private int colsCount = 2000;
+	private final int rowsCount;
+	private final int colsCount;
 	private List<List<SquareUnit>> map = new ArrayList<>();
 
-	public Ecosys() {
+	public Ecosys(final int rowsCount) {
+		this.rowsCount = rowsCount;
+		this.colsCount = this.rowsCount * 2;
 	}
 
 	public int getRowCount() {
@@ -32,7 +34,7 @@ public class Ecosys {
 			map.add(x);
 
 			for (int j = 0; j < colsCount; ++j) {
-				SquareUnit p = new SquareUnit(0, 0, 0.5, 0.5);
+				SquareUnit p = new SquareUnit(0, 0, 1/42000);
 				x.add(p);
 			}
 		}
@@ -40,22 +42,27 @@ public class Ecosys {
 
 	public void globalRefreshOnce(SunShine sun) {
 		for (int i = 0; i < rowsCount; ++i) {
+			List<SquareUnit> row = map.get(i);
+			List<SquareUnit> next_row = i==(rowsCount-1) ? null : map.get(i + 1);
+			
 			for (int j = 0; j < colsCount; ++j) {
-				SquareUnit target = map.get(i).get(j);
-				SquareUnit next_atRow = map.get(i).get(j == (colsCount - 1) ? 0 : j + 1);
-				SquareUnit next_atCol = map.get(i == (rowsCount - 1) ? 0 : i + 1).get(j);
-
+				SquareUnit target = row.get(j);
 				target.setSunnyPower(sun.getSunnyPower(i, j));
-
+				
+				SquareUnit next_atRow = row.get(j == (colsCount - 1) ? 0 : j + 1);
 				target.InteractWithNext(next_atRow);
-				target.InteractWithNext(next_atCol);
+				
+				if(next_row != null) {
+					SquareUnit next_atCol = next_row.get(j);
+					target.InteractWithNext(next_atCol);
+				}
 			}
 		}
 	}
-	
+
 	public void __printMap(BufferedWriter out) {
-		for(List<SquareUnit> row:map) {
-			for(SquareUnit x : row) {
+		for (List<SquareUnit> row : map) {
+			for (SquareUnit x : row) {
 				try {
 					out.write(x.getTemprature() + ",");
 				} catch (IOException e) {
@@ -73,20 +80,22 @@ public class Ecosys {
 	}
 
 	public static void main(String[] args) {
-		Ecosys core = new Ecosys();
+		Ecosys core = new Ecosys(1000);
 		core.LoadData();
-		
+
 		int rows = core.getRowCount();
 		int cols = core.getColCount();
 
-		for (int a = 0; a < 10; ++a) {
-			SunShine sun = new SunShine(rows, cols, a%rows, a%cols);
+		int rTimes = 1;
+		for (int a = 0; a < rTimes * cols; ++a) {
+			SunShine sun = new SunShine(rows, cols, rows / 2, a % cols);
 			core.globalRefreshOnce(sun);
+			System.out.println("太阳位于：（" + rows / 2 + "," + a % cols + ")");
 		}
-		
+
 		BufferedWriter outPort;
 		try {
-			outPort = new BufferedWriter(new FileWriter("./testdata/log.txt"));
+			outPort = new BufferedWriter(new FileWriter("./testdata/log.csv"));
 			core.__printMap(outPort);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
