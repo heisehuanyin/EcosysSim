@@ -61,12 +61,20 @@ public class SunShine implements Element {
 		if(x_step > (rows/2) || y_step > (cols/4))
 			return 0;
 		
-		double avg_row = this.SUNSHINE_NUMBER / (rows / 2);
-		double shineAtDirectRow = this.SUNSHINE_NUMBER - x_step * avg_row;
+		double avg_row = SunShine.SUNSHINE_NUMBER / (rows / 2);
+		double shineAtDirectRow = SunShine.SUNSHINE_NUMBER - x_step * avg_row;
 		
 		double avg_col = shineAtDirectRow / (cols / 4);
 		double realShine = shineAtDirectRow - y_step * avg_col;
 
 		return realShine;
+	}
+	
+	/**
+	 * 获取理论最大阳光能量值
+	 * @return 能量值
+	 */
+	public double getMaxSunnyPower() {
+		return SunShine.SUNSHINE_NUMBER;
 	}
 }

@@ -1,24 +1,22 @@
 package ws.ecosys.area;
 
-import java.util.Stack;
-
 public class SquareUnit {
 	/**
 	 * 升温系数 -- 预设为水，受到地表环境的影响，需要进行后期运算
 	 */
-	private final double tempratureTimes = 1/4200;
+	private double tempratureTimes = 0.00000025;
 	/**
-	 * 热量逸散系数，系统能能量向系统外逸散系数,不受环境影响
+	 * 热量逸散率，系统能能量向系统外逸散系数,不受环境影响
 	 */
 	private final double hotFalloutPercent;
 	/**
-	 * 能量转存储百分比
+	 * 能量转存储量，吸收的热量转入存储用途
 	 */
-	//private final double hotTransPercent;
+	private final double hotTransCapacity;
 	/**
-	 * 物理温度下限
+	 * 物理温度下限,绝对零度为基准，是一个Unsigned数字
 	 */
-	private final double tempratureDownLimit = -300;
+	private final double tempratureDownLimit = 0;
 	/**
 	 * 温度是一个状态量，初始温度为温度下限
 	 */
@@ -34,20 +32,21 @@ public class SquareUnit {
 	/**
 	 * 热量存储容器，模拟环境和物体吸能过程，热量由表及里渗透，再由内至外缓慢释放
 	 */
-	//private double hotHold = 0.0;
+	private double hotHold = 0.0;
 	
 
 	/**
 	 * 新建空间块，传入特定关键参数
 	 * @param height 地面高度
 	 * @param waterDepth 地面水深
-	 * @param hotTransPercent 温度转存储百分比
 	 * @param hotFalloutPercent 定温物体热量逸散系数
+	 * @param hotTransCapacity 能量转存储数量
 	 */
-	public SquareUnit(int height, int waterDepth, final double hotFalloutPercent) {
+	public SquareUnit(int height, int waterDepth, final double hotFalloutPercent, final double hotTransCapacity) {
 		this.height = height;
 		this.depth = waterDepth;
 		this.hotFalloutPercent = hotFalloutPercent;
+		this.hotTransCapacity = hotTransCapacity;
 	}
 
 	/**
@@ -58,9 +57,30 @@ public class SquareUnit {
 		if(this.temprature <= this.tempratureDownLimit)
 			this.temprature = this.tempratureDownLimit + 0.00001;
 		
-		this.temprature += d*this.calcTempratureTimes();
-		this.temprature = (this.temprature - this.tempratureDownLimit) * this.hotFalloutPercent / 2 + this.tempratureDownLimit;
 		
+		if(d > this.hotTransCapacity) {
+			double powerStored = d -  Math.sqrt(d / this.hotTransCapacity) * this.hotTransCapacity;
+			this.hotHold += powerStored;
+			d -= powerStored;
+			
+		}else if(d < this.hotTransCapacity){
+			
+			this.hotTransCapacity * this.hotTransCapacity / this.hotHold
+			
+			
+			double xtemp = this.hotHold - feedBack;
+			if(xtemp > 0 ) {
+				d += feedBack;
+				this.hotHold -= feedBack;
+			}else {
+				d += this.hotHold;
+				this.hotHold = 0;
+			}
+			
+		}
+		
+		this.temprature =( d*this.calcTempratureTimes() + (1-0.5*this.hotFalloutPercent)*this.temprature )
+							/ (1 + 0.5*this.hotFalloutPercent);
 	}
 	
 	/**
