@@ -34,7 +34,7 @@ public class Ecosys {
 			map.add(x);
 
 			for (int j = 0; j < colsCount; ++j) {
-				SquareUnit p = new SquareUnit(0, 0, 0.2, 50000000);
+				SquareUnit p = new SquareUnit(0, 0, 0.2, 35000000);
 				x.add(p);
 			}
 		}
