@@ -21,7 +21,7 @@ public class SunShine implements Element {
 	/**
 	 * 阳光直射模块预设太阳能量总数
 	 */
-	public static final int SUNSHINE_NUMBER = 200000000;
+	private static final int SUNSHINE_NUMBER = 200000000;
 
 	/**
 	 * 新建一个{@link SunShine},用于计算日光能量
@@ -74,7 +74,7 @@ public class SunShine implements Element {
 	 * 获取理论最大阳光能量值
 	 * @return 能量值
 	 */
-	public double getMaxSunnyPower() {
+	public static double getMaxSunnyPower() {
 		return SunShine.SUNSHINE_NUMBER;
 	}
 }

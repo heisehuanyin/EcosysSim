@@ -64,10 +64,17 @@ public class SquareUnit {
 			d -= powerStored;
 			
 		}else if(d < this.hotTransCapacity){
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			double feedBack = (this.hotHold * (this.hotTransCapacity - d))/(this.hotTransCapacity + this.hotHold);
-			
-			
-			
 			
 			double xtemp = this.hotHold - feedBack;
 			if(xtemp > 0 ) {

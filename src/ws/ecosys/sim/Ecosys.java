@@ -34,7 +34,7 @@ public class Ecosys {
 			map.add(x);
 
 			for (int j = 0; j < colsCount; ++j) {
-				SquareUnit p = new SquareUnit(0, 0, 0.2, 35000000);
+				SquareUnit p = new SquareUnit(0, 0, 0.2, SunShine.getMaxSunnyPower()/40.0);
 				x.add(p);
 			}
 		}
@@ -91,7 +91,8 @@ public class Ecosys {
 		for (int a = 0; a < rTimes * cols; ++a) {
 			SunShine sun = new SunShine(rows, cols, rows / 2, a % cols);
 			core.globalRefreshOnce(sun);
-			System.out.println("太阳位于：（" + rows / 2 + "," + a % cols + ")");
+			
+			System.out.println("太阳位置：（" + rows/2 + "," + a%cols + ")");
 		}
 
 		BufferedWriter outPort;
@@ -104,5 +105,6 @@ public class Ecosys {
 		}
 		System.out.println("Work out!===================");
 	}
+
 
 }
